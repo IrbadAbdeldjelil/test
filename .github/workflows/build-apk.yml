@@ -2,42 +2,39 @@ name: Build APK
 
 on:
   push:
-    branches:
-      - main  # يعمل عند كل push على main
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # ← هذا السطر يحل المشكلة
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. تحميل الكود
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. إعداد Java (مطلوب لـ Android)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. إعداد Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # 4. تثبيت المكتبات
       - name: Install dependencies
         run: npm install
 
-      # 5. بناء الـ APK
       - name: Build APK
         run: |
           cd android
           ./gradlew assembleRelease
 
-      # 6. حفظ الـ APK لتحميله
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
